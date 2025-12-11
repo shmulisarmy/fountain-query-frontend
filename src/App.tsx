@@ -1,5 +1,5 @@
 import { createSignal, type Component, For, Show } from 'solid-js';
-import { live_db as live_db_view } from "../../live_db_sdks/solid/live_db";
+import { live_db as live_db_view } from "./solid/live_db";
 
 export type Person = {
   name: string
