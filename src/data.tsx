@@ -15,4 +15,4 @@ export type Person={
 
 
 
-export const people = live_db<Person>(`ws://${backend_base_url}/stream-data`);
+export const people = live_db<Person>(`wss://${backend_base_url}/stream-data`);
