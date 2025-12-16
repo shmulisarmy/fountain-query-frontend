@@ -160,7 +160,7 @@ const App: Component = () => {
     const email = newPersonEmail().trim() || `${name.toLowerCase()}@example.com`;
     if (!name) return;
     
-    await fetch(`${backend_base_url}/add-person?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
+    await fetch(`https://${backend_base_url}/add-person?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
     setNewPersonName("");
     setNewPersonEmail("");
     setShowAddPersonForm(false);
@@ -173,7 +173,7 @@ const App: Component = () => {
 
   
   const handleLoadSampleData = async () => {
-    await fetch(`${backend_base_url}/add-sample-data`);
+    await fetch(`https://${backend_base_url}/add-sample-data`);
     setActiveDoc("load");
   };
 
@@ -181,7 +181,7 @@ const App: Component = () => {
     if (!confirm(`Delete person with ID ${personId}?`)) {
       return;
     }
-    await fetch(`${backend_base_url}/delete-person?id=${personId}`);
+    await fetch(`https://${backend_base_url}/delete-person?id=${personId}`);
 
     setNotificationMessage(`🗑️ Person deleted! The frontend just made a request to delete the person. Because the data is subscribed through a query, the person automatically disappears in real-time across all connected clients. Open another tab to test the real-time sync!`);
     setTimeout(() => setNotificationMessage(null), 10000);
