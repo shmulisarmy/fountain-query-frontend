@@ -1,5 +1,5 @@
-import { Person } from './App';
-import { live_db } from '../solid_sdk/live_db';
+import { Person } from './data';
+import { live_db } from './live_db_sdks/solid/live_db';
 import { deepObjectCompare } from './object_compare';
 const backend_base_url = "localhost:8080"
 

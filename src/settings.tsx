@@ -1,0 +1,1 @@
+export const backend_base_url = "fountain-query-production.up.railway.app"

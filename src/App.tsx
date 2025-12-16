@@ -1,23 +1,9 @@
 import { createSignal, type Component, For, Show } from 'solid-js';
-import { live_db as live_db_view } from "./live_db_sdks/solid/live_db";
+import { backend_base_url } from './settings';
+import { people, Person } from './data';
 
 
 
-type Person={
-  name:string
-  email:string
-  age:number
-  id:number
-  todos:{[key: string]: {
-      title:string
-      name:string
-    }}
-  profile_picture:string
-}
-
-export const backend_base_url = "fountain-query-production.up.railway.app"
-
-const people = live_db_view<Person>(`ws://${backend_base_url}/stream-data`);
 
 // Documentation content
 const DOCUMENTATION = {
