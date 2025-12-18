@@ -1,6 +1,8 @@
 import { createSignal, type Component, For, Show } from 'solid-js';
 import { backend_base_url } from './settings';
 import { people, Person } from './data';
+import { Watch_query } from './watch_query';
+import { http_url } from './utils';
 
 
 
@@ -125,12 +127,7 @@ function Person_c({ props, onDelete }: { props: Person; onDelete: (id: number) =
           </button>
         </div>
           </div>
-        <p class='text-gray-400'>has {Object.keys(props.todos).length} todos</p>
-        <ul class='p-1'>
-          {Object.entries(props.todos).map(([key, todo]) => (
-            <li class='list-disc'>{todo.title} by {todo.name}</li>
-          ))}
-        </ul>
+        
           </div>
   )
 }
@@ -160,7 +157,7 @@ const App: Component = () => {
     const email = newPersonEmail().trim() || `${name.toLowerCase()}@example.com`;
     if (!name) return;
     
-    await fetch(`https://${backend_base_url}/add-person?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
+    await fetch(`${http_url(backend_base_url)}/add-person?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
     setNewPersonName("");
     setNewPersonEmail("");
     setShowAddPersonForm(false);
@@ -173,7 +170,7 @@ const App: Component = () => {
 
   
   const handleLoadSampleData = async () => {
-    await fetch(`https://${backend_base_url}/add-sample-data`);
+    await fetch(`${http_url(backend_base_url)}/add-sample-data`);
     setActiveDoc("load");
   };
 
@@ -181,7 +178,7 @@ const App: Component = () => {
     if (!confirm(`Delete person with ID ${personId}?`)) {
       return;
     }
-    await fetch(`https://${backend_base_url}/delete-person?id=${personId}`);
+    await fetch(`${http_url(backend_base_url)}/delete-person?id=${personId}`);
 
     setNotificationMessage(`🗑️ Person deleted! The frontend just made a request to delete the person. Because the data is subscribed through a query, the person automatically disappears in real-time across all connected clients. Open another tab to test the real-time sync!`);
     setTimeout(() => setNotificationMessage(null), 10000);
@@ -389,6 +386,63 @@ const App: Component = () => {
           </div>
         </div>
       </div>
+      {function(){
+        const [query, setQuery] = createSignal("SELECT name, email, (select title from todo where todo.person_id == person.id) as todos FROM person");
+        const [inUseQuery, setInUseQuery] = createSignal("SELECT name, email FROM person");
+        const [placeholder, setPlaceholder] = createSignal(true);
+        return (
+          <div class="space-y-4">
+           <p class='p-1 text-sm border'>this is a playground where you try out different queries</p> 
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              setInUseQuery(query());
+              setPlaceholder(false);
+              setPlaceholder(true);
+            }} class="space-y-2">
+              <label class="block mb-2 text-sm font-medium text-gray-900">Query</label>
+              <div class="relative">
+                <input type="text" value={query()} onInput={(e) => setQuery(e.currentTarget.value)} class="block w-full rounded-md border-gray-300 shadow-sm pr-10 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="e.g. SELECT name, email, (select title from todo where todo.id == person.id) as todos FROM person" required />
+                <button 
+                  type="submit" 
+                  style={{
+                    position: 'absolute', 
+                    "inset-y": 0, 
+                    right: 0, 
+                    px: '4', 
+                    textAlign: 'right', 
+                    fontSize: 'sm', 
+                    color: 'gray-500', 
+                    focusRing: '2 offset-2 blue-500', 
+                    outline: 'none', 
+                  }}
+                >
+                  Update query
+                </button>
+              </div>
+            </form>
+            <p class="text-xs text-gray-500 mt-2">
+                Try these queries:
+                <ul class="list-inside list-disc text-xs">
+                  <li class="ml-2 leading-7">
+                    <code class="text-xs">SELECT name, email FROM person</code>
+                  </li>
+                <li class="ml-2 leading-7">
+                    <code class="text-xs">SELECT title FROM todo</code>
+                  </li>
+                  <li class="ml-2 leading-7">
+                    <code class="text-xs">
+                      SELECT name, email, (select title from todo where todo.person_id == person.id) as todos FROM person
+                    </code>
+                  </li>
+                </ul>
+              </p>
+            <Show when={placeholder()}>
+              <Watch_query query={inUseQuery()} />
+            </Show>
+          </div>
+        )
+      }()}
+      
     </div>
   );
 };
