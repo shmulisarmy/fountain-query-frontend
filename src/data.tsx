@@ -4,7 +4,7 @@ import { ws_url } from "./utils"
 
 // 
 
-export type Person={
+type Person={
   name:string
   email:string
   age:number
@@ -13,6 +13,7 @@ export type Person={
   todos:{[key: string]: {
       title:string
       name:string
+      id:number
     }}
 }
 

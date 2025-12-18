@@ -127,7 +127,39 @@ function Person_c({ props, onDelete }: { props: Person; onDelete: (id: number) =
           </button>
         </div>
           </div>
-        
+        <ul style={{display: "none"}} class='p-1'>
+          <For each={Object.entries(props.todos)}>
+            {([key, todo]) => (
+              <li class='list-disc'>
+                <p>
+                  {todo.title} by {todo.name}
+                  <button
+                    onclick={() => {
+                      fetch(`${http_url(backend_base_url)}/delete-todo?todo_id=${todo.id}`);
+                    }}
+                  >delete</button>
+                  </p>
+                  </li>
+            )}
+          </For>
+        </ul>
+        <form style={{display: "none"}} class="flex flex-col space-y-2"
+          onsubmit={function(e){
+            e.preventDefault();
+            const title = document.getElementById("todo-title") as HTMLInputElement;
+            fetch(`${http_url(backend_base_url)}/add-todo?title=${title.value}&person_id=${props.id}`);
+            title.value = "";
+          }}
+        >
+          <div class="flex flex-col space-y-1">
+            <label for="todo-title" class="text-sm font-medium text-gray-900">Title:</label>
+            <input id="todo-title" type="text" class="border border-gray-300 rounded-md px-2 py-1" />
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <button type="submit" class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors">Add todo</button>
+          </div>
+        </form>
           </div>
   )
 }
@@ -434,6 +466,8 @@ const App: Component = () => {
                       SELECT name, email, (select title from todo where todo.person_id == person.id) as todos FROM person
                     </code>
                   </li>
+                  
+
                 </ul>
               </p>
             <Show when={placeholder()}>
